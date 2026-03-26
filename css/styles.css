@@ -1,0 +1,19 @@
+/* ===== styles.css ===== */
+body {
+    margin: 0;
+    font-family: system-ui;
+    background: #0f172a;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.app {
+    width: 320px;
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}

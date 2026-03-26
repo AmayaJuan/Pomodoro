@@ -1,0 +1,43 @@
+<!-----index.html------------>
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Pomodoro Pro</title>
+        <link rel="stylesheet" href="css/styles.css" />
+    </head>
+    <body>
+        <div class="app">
+            <header>
+               <h1>🍅 Pomodoro Pro</h1>
+               <p id="status">Focused on work</p>
+            </header>
+
+            <main>
+               <div id="timer" id="timer">25:00</div>
+            
+               <div class="progress-container">
+                  <div id="progress"></div> 
+               </div>
+               
+               <div class="controls">
+                 <button id="startBtn">▶</button>
+                 <button id="pauseBtn">⏸</button>
+                 <button id="resetBtn">⟳</button>
+               </div>
+
+               <div class="settings">
+                  <label>Job (min): <input type="number" id="workTime" value="25"></label>
+                  <label>Rest (min): <input type="number" id="breakTime" value="5"></label>
+               </div>
+
+               <div class="status">
+                  <p> Completed Pomodoros: <span id="count">0</span></p>
+               </div>
+            </main>
+        </div>
+          
+        <script src="js/script.js"></script>
+    </body>
+</html>
