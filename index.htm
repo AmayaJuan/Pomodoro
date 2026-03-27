@@ -15,7 +15,7 @@
             </header>
 
             <main>
-               <div id="timer" id="timer">25:00</div>
+<div id="timer">25:00</div>
             
                <div class="progress-container">
                   <div id="progress"></div> 
@@ -28,8 +28,10 @@
                </div>
 
                <div class="settings">
-                  <label>Job (min): <input type="number" id="workTime" value="25"></label>
-                  <label>Rest (min): <input type="number" id="breakTime" value="5"></label>
+<label>Job (min): 
+<input type="number" id="workTime" value="25" min="1" max="60" /></label>
+                  <label>Rest (min): 
+<input type="number" id="breakTime" value="5" min="1" max="30" /></label>
                </div>
 
                <div class="status">
@@ -38,6 +40,6 @@
             </main>
         </div>
           
-        <script src="js/script.js"></script>
+        <script src="js/main.js"></script>
     </body>
 </html>
