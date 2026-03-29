@@ -1,51 +1,152 @@
-<!-----index.html------------>
 <!DOCTYPE html>
 <html lang="es">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Pomodoro Pro</title>
-        <link rel="stylesheet" href="css/styles.css" />
-    </head>
-    <body>
-        <div class="app">
-            <header>
-               <h1>🍅 Pomodoro Pro</h1>
-               <p id="status">Focused on work</p>
-            </header>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Pomodoro Pro — Temporizador Pomodoro con descansos inteligentes y pausas de comida" />
+  <title>Pomodoro Pro</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
 
-            <main>
-<div id="timer">25:00</div>
-            
-               <div class="progress-container">
-                  <div id="progress"></div> 
-               </div>
-               
-               <div class="controls">
-                 <button id="startBtn">▶</button>
-                 <button id="pauseBtn">⏸</button>
-                 <button id="resetBtn">⟳</button>
-               </div>
+<div class="app">
 
-               <div class="settings">
-                  <label>Trabajo (min): 
-                  <input type="number" id="workTime" value="25" min="1" max="60" /></label>
-                  <label>Descanso corto (min): 
-                  <input type="number" id="breakTime" value="5" min="1" max="30" /></label>
-                  <label>Idioma / Language:
-                  <select id="langSelect">
-  <option value="es">Español</option>
-  <option value="en">English</option>
-</select>
-            </label>
-               </div>
+  <!-- ── Top bar ──────────────────────────── -->
+  <header class="top-bar">
+    <div class="brand">🍅 Pomo<span>doro</span> Pro</div>
+    <button class="btn-lang" id="langBtn" onclick="toggleLang()">ES / EN</button>
+  </header>
 
-               <div class="status">
-                  <p> Completed Pomodoros: <span id="count">0</span></p>
-               </div>
-            </main>
+  <!-- ── Timer area ───────────────────────── -->
+  <main class="timer-area">
+
+    <!-- Puntos de ciclo -->
+    <div class="cycle-dots" id="cycleDots" aria-label="Ciclo actual"></div>
+
+    <!-- Anillo SVG + reloj -->
+    <div class="ring-wrap" role="timer" aria-live="polite">
+      <svg width="220" height="220" viewBox="0 0 220 220" aria-hidden="true">
+        <circle class="ring-bg"       cx="110" cy="110" r="100"/>
+        <circle class="ring-progress" cx="110" cy="110" r="100" id="ringProgress"/>
+      </svg>
+      <div class="ring-inner">
+        <div class="timer-big"   id="timerDisplay">25:00</div>
+        <div class="phase-inner" id="phaseLabel">TRABAJO</div>
+      </div>
+    </div>
+
+    <!-- Controles -->
+    <div class="controls">
+      <button class="btn-icon" title="Reiniciar" aria-label="Reiniciar" onclick="resetTimer()">↺</button>
+      <button class="btn-main" id="mainBtn"     aria-label="Iniciar / Pausar" onclick="toggleTimer()">▶</button>
+      <button class="btn-icon" title="Saltar"   aria-label="Saltar fase" onclick="skipPhase()">⏭</button>
+    </div>
+
+  </main>
+
+  <!-- ── Barra de estado ──────────────────── -->
+  <div class="status-bar">
+    <span id="statusText">Listo para empezar</span>
+    <div class="status-right">
+      <span>
+        <span class="count-num" id="countDisplay">0</span>
+        <span id="pomLabel">pomodoros</span>
+      </span>
+      <button class="btn-settings" id="settingsToggleBtn" onclick="toggleSettings()">
+        ⚙ Ajustes
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Panel de ajustes ─────────────────── -->
+  <section class="settings-panel" id="settingsPanel" aria-label="Configuración">
+
+    <div class="settings-title" id="settingsTitle">Configuración</div>
+
+    <!-- Grid de tiempos -->
+    <div class="settings-grid">
+
+      <div class="setting-item">
+        <div class="setting-label" id="lWorkTime">Tiempo trabajo</div>
+        <div class="setting-row">
+          <input class="setting-input" type="number" id="workTime"
+                 value="25" min="1" max="90" aria-label="Tiempo de trabajo en minutos"
+                 oninput="onSettingChange()">
+          <div class="setting-stepper">
+            <button class="step-btn" onclick="step('workTime', 1)"  aria-label="+1">▲</button>
+            <button class="step-btn" onclick="step('workTime', -1)" aria-label="-1">▼</button>
+          </div>
+          <span class="setting-unit" id="lMin1">min</span>
         </div>
-          
-        <script src="js/main.js"></script>
-    </body>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-label" id="lShortBreak">Descanso corto</div>
+        <div class="setting-row">
+          <input class="setting-input" type="number" id="shortBreak"
+                 value="5" min="1" max="30" aria-label="Descanso corto en minutos"
+                 oninput="onSettingChange()">
+          <div class="setting-stepper">
+            <button class="step-btn" onclick="step('shortBreak', 1)"  aria-label="+1">▲</button>
+            <button class="step-btn" onclick="step('shortBreak', -1)" aria-label="-1">▼</button>
+          </div>
+          <span class="setting-unit" id="lMin2">min</span>
+        </div>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-label" id="lLongBreak">Descanso largo</div>
+        <div class="setting-row">
+          <input class="setting-input" type="number" id="longBreak"
+                 value="15" min="5" max="60" aria-label="Descanso largo en minutos"
+                 oninput="onSettingChange()">
+          <div class="setting-stepper">
+            <button class="step-btn" onclick="step('longBreak', 1)"  aria-label="+1">▲</button>
+            <button class="step-btn" onclick="step('longBreak', -1)" aria-label="-1">▼</button>
+          </div>
+          <span class="setting-unit" id="lMin3">min</span>
+        </div>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-label" id="lCycleLen">Pomodoros por ciclo</div>
+        <div class="setting-row">
+          <input class="setting-input" type="number" id="cycleLen"
+                 value="4" min="1" max="8" aria-label="Cantidad de pomodoros por ciclo"
+                 oninput="onSettingChange()">
+          <div class="setting-stepper">
+            <button class="step-btn" onclick="step('cycleLen', 1)"  aria-label="+1">▲</button>
+            <button class="step-btn" onclick="step('cycleLen', -1)" aria-label="-1">▼</button>
+          </div>
+          <span class="setting-unit" id="lCycles">ciclos</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Info automática de descansos -->
+    <div class="auto-break-info" id="autoBreakInfo"></div>
+
+    <!-- Descansos de comida (renderizados por JS desde config.json) -->
+    <div class="meal-section">
+      <div class="meal-title" id="lMealBreaks">Descansos de comida</div>
+      <div id="mealContainer"></div>
+    </div>
+
+  </section>
+
+  <!-- ── Keyboard hint ────────────────────── -->
+  <footer class="kb-hint" id="kbHint" aria-label="Atajos de teclado">
+    <span class="kb-key">Espacio</span> pausar &nbsp;·&nbsp;
+    <span class="kb-key">R</span> reiniciar &nbsp;·&nbsp;
+    <span class="kb-key">S</span> saltar
+  </footer>
+
+</div><!-- /.app -->
+
+<!-- Toast global -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="js/main.js"></script>
+</body>
 </html>
