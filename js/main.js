@@ -92,8 +92,15 @@ function saveToStorage() {
 
 /* ── Traducción ────────────────────────────── */
 function t(key, vars = {}) {
-  const str = state.config?.langs?.[state.lang]?.[key] || key;
-  return str.replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? '');
+  const val = state.config?.langs?.[state.lang]?.[key];
+  if (val === undefined || val === null) return key;
+  if (Array.isArray(val)) return val;
+  return String(val).replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? '');
+}
+
+function mealName(i) {
+  const names = t('mealNames');
+  return Array.isArray(names) ? (names[i] || '') : '';
 }
 
 /* ── Fases ─────────────────────────────────── */
@@ -127,7 +134,7 @@ function updatePhaseLabel() {
   let label;
   if (state.phase === 'meal' && state.mealIdx !== null) {
     const meal = state.meals[state.mealIdx];
-    label = `${meal.icon} ${t('mealNames')[state.mealIdx]}`;
+    label = `${meal.icon} ${mealName(state.mealIdx)}`;
   } else {
     label = t(state.phase);
   }
@@ -221,8 +228,7 @@ function handlePhaseEnd() {
     const next = getBreakAfter(state.completed);
 
     if (next.type === 'meal') {
-      const name = state.meals[next.idx].id;
-      const label = t('mealNames')[next.idx];
+      const label = mealName(next.idx);
       const msg   = t('mealTime', { name: label });
       showToast(msg);
       speak(msg);
@@ -328,8 +334,6 @@ function renderMealItems() {
   container.innerHTML = '';
 
   state.meals.forEach((meal, i) => {
-    const mealNames = state.config.langs[state.lang].mealNames;
-
     const item = document.createElement('div');
     item.className = `meal-item${meal.enabled ? ' active' : ''}`;
     item.id        = `mealItem_${i}`;
@@ -337,7 +341,7 @@ function renderMealItems() {
 
     item.innerHTML = `
       <div class="meal-info">
-        <div class="meal-name" id="mealName_${i}">${meal.icon} ${mealNames[i]}</div>
+        <div class="meal-name" id="mealName_${i}">${meal.icon} ${mealName(i)}</div>
         <div class="meal-when" id="mealWhen_${i}"></div>
       </div>
       <div class="meal-right">
@@ -421,10 +425,9 @@ function applyLang() {
   });
 
   // Nombres de comidas
-  const mealNames = t('mealNames');
   state.meals.forEach((meal, i) => {
     const nameEl = v(`mealName_${i}`);
-    if (nameEl) nameEl.textContent = `${meal.icon} ${mealNames[i]}`;
+    if (nameEl) nameEl.textContent = `${meal.icon} ${mealName(i)}`;
   });
 
   // Hint del teclado
